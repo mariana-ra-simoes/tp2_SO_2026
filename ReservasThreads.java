@@ -238,15 +238,15 @@ public class ReservasThreads {
     private static void uso() {
         System.out.print(
                 "Uso: java ReservasThreads [opcoes]\n"
-              + "  -c N             clientes simulados iniciais (threads)   [30]\n"
-              + "  -v N             numero de voos                          [3]\n"
-              + "  -a N             assentos por voo                        [8]\n"
-              + "  -l MS            latencia maxima do pagamento em ms      [800]\n"
-              + "  --batch          sem menu: roda, espera as threads e mostra o tempo\n"
-              + "  --cancelamento   liga a thread de cancelamento (padrao: ligada no modo interativo)\n"
-              + "  --monitor        liga a thread monitor (padrao: ligada no modo interativo)\n"
-              + "  --sem-mutex      DESLIGA a sincronizacao (demonstra overbooking)\n"
-              + "  --atraso-critico US  atraso dentro da secao critica (torna a corrida mais provavel)\n");
+            + "  -c N             clientes simulados iniciais (threads)   [30]\n"
+            + "  -v N             numero de voos                          [3]\n"
+            + "  -a N             assentos por voo                        [8]\n"
+            + "  -l MS            latencia maxima do pagamento em ms      [800]\n"
+            + "  --batch          sem menu: roda, espera as threads e mostra o tempo\n"
+            + "  --cancelamento   liga a thread de cancelamento (padrao: ligada no modo interativo)\n"
+            + "  --monitor        liga a thread monitor (padrao: ligada no modo interativo)\n"
+            + "  --sem-mutex      DESLIGA a sincronizacao (demonstra overbooking)\n"
+            + "  --atraso-critico US  atraso dentro da secao critica (torna a corrida mais provavel)\n");
     }
 
     public static void main(String[] args) throws Exception {

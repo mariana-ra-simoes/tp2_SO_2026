@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * TAD "Sistema de Reservas de Passagens Aereas".
@@ -215,6 +216,23 @@ public class SistemaReservas {
         }
     }
 
+    /** Copia dos assentos do voo (null = livre), tirada sob o lock. Usado pela interface grafica. */
+    public String[] snapshot(int idxVoo) {
+        Voo v = voos.get(idxVoo);
+        trava(v);
+        try {
+            return v.assentos.clone();
+        } finally {
+            destrava(v);
+        }
+    }
+
+    /** Reservas confirmadas menos cancelamentos (o que o sistema "prometeu" aos clientes). */
+    public int confirmadas(int idxVoo) {
+        Voo v = voos.get(idxVoo);
+        return v.reservasOk.get() - v.cancelamentosOk.get();
+    }
+
     /**
      * Monta o mapa de um voo num StringBuilder (sob o lock) e imprime depois,
      * de uma vez so, para que a saida de um voo nao se misture com a de
@@ -250,6 +268,12 @@ public class SistemaReservas {
      * <= capacidade. Retorna quantos voos estao inconsistentes (0 = tudo certo).
      */
     public int auditar(boolean verbose) {
+        Consumer<String> saida = verbose ? System.out::println : linha -> { };
+        return auditar(saida);
+    }
+
+    /** Mesma auditoria, mas entrega cada linha do relatorio a um Consumer (usado pela interface grafica). */
+    public int auditar(Consumer<String> saida) {
         int ruins = 0;
         for (Voo v : voos) {
             int real = 0;
@@ -267,12 +291,10 @@ public class SistemaReservas {
             boolean ruim = (liquido != real) || (liquido > v.capacidade) || (contador > v.capacidade);
             if (ruim) ruins++;
 
-            if (verbose) {
-                System.out.printf("[Auditoria] Voo %s: capacidade=%d | clientes com reserva confirmada=%d | "
-                                + "assentos realmente ocupados=%d | contador=%d -> %s%n",
-                        v.codigo, v.capacidade, liquido, real, contador,
-                        ruim ? "INCONSISTENTE (overbooking / assento duplicado)" : "OK");
-            }
+            saida.accept(String.format("[Auditoria] Voo %s: capacidade=%d | clientes com reserva confirmada=%d | "
+                            + "assentos realmente ocupados=%d | contador=%d -> %s",
+                    v.codigo, v.capacidade, liquido, real, contador,
+                    ruim ? "INCONSISTENTE (overbooking / assento duplicado)" : "OK"));
         }
         return ruins;
     }
